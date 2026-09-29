@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Commit, Ship, Show, Grow</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -142,6 +147,25 @@
     color: var(--ink-2);
   }
   .byline span:first-child { color: var(--ink); font-weight: 600; }
+  .pdf-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 4px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    text-decoration: none;
+    border: 1px solid var(--rule-strong);
+    border-radius: 3px;
+    padding: 7px 12px;
+    width: fit-content;
+    transition: border-color .15s, color .15s;
+  }
+  .pdf-link:hover { color: var(--accent); border-color: var(--accent); }
+  .pdf-link svg { width: 13px; height: 13px; flex: none; }
 
   /* Section grid: rail + main */
   .sec {
@@ -542,6 +566,8 @@
   }
 </style>
 
+</head>
+<body>
 <div class="page">
 
   <header class="hero">
@@ -549,6 +575,10 @@
     <h1>Commit, Ship, Show, Grow</h1>
     <p class="dek">A sketch of how I would design and run education at the Horowitz Andreessen Academy</p>
     <p class="byline"><span>Lea Thommen</span><span>San Francisco</span><span>September 2026</span></p>
+    <a class="pdf-link" href="Commit-Ship-Show-Grow.pdf" download>
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.5v9M4.5 7l3.5 3.5L11.5 7M2 12.5v1.5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1.5"/></svg>
+      Download PDF
+    </a>
   </header>
 
   <!-- ONE PAGE -->
@@ -990,3 +1020,5 @@
   </footer>
 
 </div>
+</body>
+</html>
