@@ -1,0 +1,992 @@
+<title>Commit, Ship, Show, Grow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap">
+<style>
+  :root {
+    --paper: #F4F5F7;
+    --surface: #FFFFFF;
+    --ink: #15171C;
+    --ink-2: #474D59;
+    --ink-3: #6B7180;
+    --rule: #D9DDE4;
+    --rule-strong: #AEB4C0;
+    --accent: #2B3CC8;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #E6E9FB;
+    --accent-mid: #C4CBF4;
+    --accent-deep: #1D2A94;
+    --code-bg: #ECEEF3;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0F1115;
+      --surface: #171A21;
+      --ink: #E8EAF0;
+      --ink-2: #B0B5C1;
+      --ink-3: #8C92A0;
+      --rule: #2A2F3A;
+      --rule-strong: #475062;
+      --accent: #95A1FF;
+      --accent-ink: #0F1115;
+      --accent-soft: #1C2242;
+      --accent-mid: #2E3877;
+      --accent-deep: #C3CAFF;
+      --code-bg: #1C2029;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0F1115;
+    --surface: #171A21;
+    --ink: #E8EAF0;
+    --ink-2: #B0B5C1;
+    --ink-3: #8C92A0;
+    --rule: #2A2F3A;
+    --rule-strong: #475062;
+    --accent: #95A1FF;
+    --accent-ink: #0F1115;
+    --accent-soft: #1C2242;
+    --accent-mid: #2E3877;
+    --accent-deep: #C3CAFF;
+    --code-bg: #1C2029;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.6;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-inline: 32px;
+    padding-block: 56px 80px;
+  }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  strong { font-weight: 650; }
+  em { font-style: italic; }
+
+  /* Type */
+  .eyebrow, .label, th, .rail, .toc, .mono {
+    font-family: var(--mono);
+  }
+  .eyebrow {
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0;
+  }
+  h1, h2, h3 {
+    font-family: var(--display);
+    text-wrap: balance;
+    color: var(--ink);
+    margin: 0;
+  }
+  h1 {
+    font-size: clamp(46px, 8.4vw, 104px);
+    font-weight: 800;
+    font-stretch: 118%;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+  }
+  h2 {
+    font-size: clamp(26px, 3.2vw, 34px);
+    font-weight: 750;
+    font-stretch: 110%;
+    line-height: 1.12;
+    letter-spacing: -0.012em;
+  }
+  h3 {
+    font-size: 19px;
+    font-weight: 700;
+    font-stretch: 104%;
+    line-height: 1.25;
+    margin-top: 8px;
+  }
+  p { margin: 0; max-width: 68ch; }
+
+  /* Hero */
+  .hero {
+    display: grid;
+    gap: 22px;
+    padding-bottom: 40px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .hero .dek {
+    font-family: var(--display);
+    font-stretch: 100%;
+    font-size: clamp(19px, 2.2vw, 24px);
+    font-weight: 450;
+    color: var(--ink-2);
+    max-width: 40ch;
+    line-height: 1.35;
+  }
+  .byline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+  .byline span:first-child { color: var(--ink); font-weight: 600; }
+
+  /* Section grid: rail + main */
+  .sec {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 48px;
+    padding-block: 56px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .rail {
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1.5;
+    padding-top: 8px;
+  }
+  .rail b {
+    display: block;
+    font-family: var(--display);
+    font-size: 44px;
+    font-weight: 800;
+    font-stretch: 118%;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 10px;
+    text-transform: none;
+  }
+  .main { display: block; min-width: 0; }
+  .main > * + * { margin-top: 22px; }
+  .main > h2 { margin-bottom: 4px; }
+  .lead { font-size: 20px; line-height: 1.55; color: var(--ink); }
+
+  /* One-page summary */
+  .summary { border-bottom: 2px solid var(--ink); }
+  .summary .rail b { font-size: 15px; font-family: var(--mono); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); }
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--rule-strong);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .principle {
+    padding: 22px 22px 24px;
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .principle + .principle { border-left: 1px solid var(--rule); }
+  .principle:first-child { padding-left: 0; }
+  .principle h3 {
+    font-size: clamp(22px, 2.3vw, 27px);
+    font-weight: 800;
+    font-stretch: 112%;
+    letter-spacing: -0.015em;
+    line-height: 1.08;
+    margin: 0;
+  }
+  .principle h3 em { font-style: normal; color: var(--accent); }
+  .principle p { font-size: 16px; line-height: 1.5; color: var(--ink-2); }
+
+  .traits {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 36px;
+  }
+  .trait { display: grid; gap: 4px; }
+  .trait .label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  .trait p { font-size: 16.5px; line-height: 1.5; }
+
+  .kv { display: block; }
+  .kv > * + * { margin-top: 12px; }
+  .kv p { font-size: 17px; }
+
+  /* Tables */
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--display);
+    font-stretch: 100%;
+    font-size: 15px;
+    line-height: 1.45;
+    background: var(--surface);
+  }
+  caption {
+    caption-side: top;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-bottom: 10px;
+    background: var(--paper);
+  }
+  th, td {
+    text-align: left;
+    vertical-align: top;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  thead th {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1.5px solid var(--ink);
+    background: var(--surface);
+  }
+  tbody th {
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink);
+  }
+  tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+  td strong { font-weight: 700; }
+  .t-wide { min-width: 720px; }
+  .t-mid { min-width: 600px; }
+
+  /* Loop table */
+  .loop thead th { color: var(--accent); font-size: 12.5px; }
+  .loop thead th.arrow::after { content: "  →"; color: var(--ink-3); }
+  .loop tbody th { width: 18%; }
+
+  /* Year timeline */
+  .timeline-wrap { overflow-x: auto; }
+  .timeline {
+    min-width: 640px;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    row-gap: 6px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+  }
+  .seg {
+    padding: 12px 10px;
+    min-height: 74px;
+    display: grid;
+    align-content: space-between;
+    gap: 6px;
+    border-right: 2px solid var(--paper);
+  }
+  .seg b { font-family: var(--display); font-size: 16px; font-weight: 750; font-stretch: 108%; letter-spacing: -0.005em; }
+  .seg span { color: inherit; opacity: 0.85; }
+  .seg.explore { grid-column: 1 / 5; background: var(--accent-soft); color: var(--ink); }
+  .seg.commit { grid-column: 5 / 9; background: var(--accent-mid); color: var(--ink); }
+  .seg.abroad { grid-column: 9 / 10; background: var(--ink); color: var(--paper); padding-inline: 2px; overflow: hidden; }
+  .seg.abroad b { font-size: 10px; font-stretch: 82%; letter-spacing: -0.03em; white-space: nowrap; }
+  .seg.coop { grid-column: 10 / 13; background: var(--accent); color: var(--accent-ink); border-right: 0; }
+  .month { color: var(--ink-3); padding-top: 4px; border-top: 1px solid var(--rule-strong); }
+  .marker { color: var(--ink-2); font-size: 11px; line-height: 1.3; padding-top: 2px; }
+  .marker::before { content: "▲ "; color: var(--accent); }
+  .m-launch { grid-column: 1 / 4; }
+  .m-exhibit { grid-column: 7 / 10; justify-self: end; text-align: right; padding-right: 8px; }
+  .m-record { grid-column: 10 / 13; justify-self: end; text-align: right; }
+
+  /* Ship log */
+  .shiplog {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 16px 18px;
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .shiplog .head { color: var(--ink-3); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+  .shiplog dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 18px; margin: 0; }
+  .shiplog dt { color: var(--accent); font-weight: 600; }
+  .shiplog dd { margin: 0; color: var(--ink); }
+
+  /* Lists */
+  ul, ol { margin: 0; padding-left: 1.2em; max-width: 68ch; }
+  li + li { margin-top: 8px; }
+  li { padding-left: 4px; }
+  li::marker { color: var(--accent); font-family: var(--mono); font-size: 0.85em; }
+  .ladder { counter-reset: none; }
+
+  /* Seven-item lists with bold lead */
+  .points { list-style: none; padding: 0; }
+  .points li + li { margin-top: 16px; }
+  .points li { padding: 0; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 4px; }
+  .points li > .n { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; padding-top: 3px; }
+
+  /* Coaching matrix */
+  .matrix {
+    display: grid;
+    grid-template-columns: 34px 60px minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 0;
+    max-width: 760px;
+  }
+  .axis-y {
+    grid-column: 1; grid-row: 1 / 3;
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+    text-align: center;
+  }
+  .axis-x {
+    grid-column: 3 / 5; grid-row: 4;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+    text-align: center; padding-top: 6px;
+  }
+  .tick { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); }
+  .tick.y { grid-column: 2; align-self: center; }
+  .tick.x { grid-row: 3; text-align: center; padding-top: 8px; }
+  .cell {
+    padding: 16px 18px 18px;
+    border: 1px solid var(--rule-strong);
+    background: var(--surface);
+    display: grid; gap: 6px; align-content: start;
+    font-size: 15.5px; line-height: 1.45;
+  }
+  .cell b { font-family: var(--display); font-size: 17px; font-weight: 750; font-stretch: 106%; }
+  .cell q { font-style: italic; quotes: "“" "”"; color: var(--ink-2); }
+  .cell.growth { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .cell.growth q { color: var(--accent-ink); }
+  .c-ow { grid-column: 3; grid-row: 1; margin: 0 -1px -1px 0; }
+  .c-gr { grid-column: 4; grid-row: 1; margin: 0 0 -1px 0; }
+  .c-co { grid-column: 3; grid-row: 2; margin: 0 -1px 0 0; }
+  .c-cf { grid-column: 4; grid-row: 2; }
+
+  /* Growth review document */
+  .doc {
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 68ch;
+  }
+  .doc .doc-head {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-3);
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--code-bg);
+  }
+  .doc .doc-body { padding: 18px; font-size: 17px; }
+  .doc .doc-body > * + * { margin-top: 12px; }
+  .shift { font-family: var(--display); font-weight: 750; font-stretch: 104%; }
+  .shift .arrow { color: var(--accent); }
+
+  /* Why me */
+  .creds { list-style: none; padding: 0; max-width: 72ch; }
+  .creds li + li { margin-top: 16px; }
+  .creds li { padding: 0; }
+  .creds strong { font-family: var(--display); font-weight: 750; font-stretch: 104%; font-size: 17px; }
+  .closing {
+    font-family: var(--display);
+    font-size: clamp(22px, 2.6vw, 28px);
+    font-weight: 750;
+    font-stretch: 108%;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    max-width: 30ch;
+  }
+
+  /* TOC */
+  .toc {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px 28px;
+    padding-block: 28px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+  }
+  .toc a { color: var(--ink-2); text-decoration: none; display: flex; gap: 10px; }
+  .toc a span { color: var(--accent); font-weight: 600; }
+  .toc a:hover { color: var(--accent); }
+
+  /* Footer */
+  .foot {
+    padding-top: 36px;
+    display: grid;
+    gap: 14px;
+    font-size: 14.5px;
+    color: var(--ink-3);
+    line-height: 1.6;
+  }
+  .foot p { max-width: 90ch; }
+  .foot .who { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  blockquote { margin: 0; }
+  .note { font-size: 15.5px; color: var(--ink-2); }
+
+  @media (max-width: 880px) {
+    .page { padding-inline: 20px; padding-block: 36px 56px; }
+    .sec { grid-template-columns: minmax(0, 1fr); gap: 18px; padding-block: 40px; }
+    .rail b { font-size: 34px; display: inline; margin: 0 12px 0 0; }
+    .rail { display: flex; align-items: baseline; flex-wrap: wrap; padding-top: 0; }
+    .summary .rail b { font-size: 13px; }
+    .principles { grid-template-columns: minmax(0, 1fr); }
+    .principle, .principle:first-child { padding: 18px 0; }
+    .principle + .principle { border-left: 0; border-top: 1px solid var(--rule); }
+    .traits { grid-template-columns: minmax(0, 1fr); }
+    .toc { grid-template-columns: minmax(0, 1fr); }
+    body { font-size: 17px; }
+    .lead { font-size: 18.5px; }
+  }
+  @media (max-width: 560px) {
+    .matrix { grid-template-columns: 24px 44px minmax(0, 1fr) minmax(0, 1fr); }
+    .cell { padding: 12px; font-size: 14px; }
+    .cell b { font-size: 15px; }
+    .points li { grid-template-columns: 26px minmax(0, 1fr); }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+  /* Print / PDF */
+  @page {
+    size: letter;
+    margin: 0.55in 0.6in 0.7in;
+    @bottom-left { content: "Lea Thommen  ·  Commit, Ship, Show, Grow"; font-family: "IBM Plex Mono", monospace; font-size: 7.5pt; color: #6B7180; }
+    @bottom-right { content: counter(page) " / " counter(pages); font-family: "IBM Plex Mono", monospace; font-size: 7.5pt; color: #6B7180; }
+  }
+  @media print {
+    :root, :root:not([data-theme="light"]), :root[data-theme="dark"] {
+      --paper: #FFFFFF;
+      --surface: #FFFFFF;
+      --ink: #15171C;
+      --ink-2: #474D59;
+      --ink-3: #6B7180;
+      --rule: #D9DDE4;
+      --rule-strong: #AEB4C0;
+      --accent: #2B3CC8;
+      --accent-ink: #FFFFFF;
+      --accent-soft: #E6E9FB;
+      --accent-mid: #C4CBF4;
+      --accent-deep: #1D2A94;
+      --code-bg: #F1F2F6;
+      color-scheme: light;
+    }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-size: 10pt; line-height: 1.5; }
+    .page { max-width: none; padding: 0; }
+    .toc { display: none; }
+    .hero { padding-bottom: 18px; gap: 12px; }
+    h1 { font-size: 46pt; }
+    h2 { font-size: 17pt; }
+    h3 { font-size: 11.5pt; }
+    .hero .dek { font-size: 13pt; }
+    .byline { font-size: 8.5pt; }
+    .sec { grid-template-columns: 1.05in minmax(0, 1fr); gap: 0.28in; padding-block: 18pt; }
+    .rail { font-size: 7pt; padding-top: 2pt; }
+    .rail b { font-size: 24pt; margin-bottom: 4pt; }
+    .summary .rail b { font-size: 8pt; }
+    .main > * + * { margin-top: 9pt; }
+    .lead { font-size: 11pt; }
+    p, ul, ol { max-width: none; }
+    .principle { padding: 10pt 12pt 12pt; gap: 5pt; }
+    .principle h3 { font-size: 13.5pt; }
+    .principle p, .trait p, .kv p { font-size: 9.5pt; }
+    .traits { gap: 8pt 20pt; }
+    .trait .label { font-size: 7pt; }
+    table { font-size: 8.3pt; line-height: 1.35; }
+    th, td { padding: 5pt 6pt; }
+    thead th { font-size: 6.8pt; }
+    tbody th { font-size: 8.3pt; }
+    caption { font-size: 7pt; padding-bottom: 4pt; }
+    .t-wide, .t-mid, .timeline { min-width: 0; }
+    .scroll, .timeline-wrap, .shiplog { overflow: visible; }
+    .timeline { font-size: 6.8pt; }
+    .seg { min-height: 44pt; padding: 6pt; }
+    .seg b { font-size: 9pt; }
+    .marker { font-size: 6.8pt; }
+    .shiplog { font-size: 8pt; padding: 8pt 10pt; }
+    .shiplog .head { font-size: 6.8pt; margin-bottom: 4pt; }
+    .matrix { max-width: none; grid-template-columns: 18pt 34pt minmax(0, 1fr) minmax(0, 1fr); }
+    .cell { font-size: 8.5pt; padding: 8pt 10pt; gap: 3pt; }
+    .cell b { font-size: 9.5pt; }
+    .tick, .axis-x, .axis-y { font-size: 6.8pt; }
+    .doc { max-width: none; }
+    .doc .doc-head { font-size: 6.8pt; padding: 5pt 10pt; }
+    .doc .doc-body { font-size: 9.5pt; padding: 9pt 10pt; gap: 6pt; }
+    .creds { max-width: none; gap: 7pt; }
+    .creds strong { font-size: 10pt; }
+    .closing { font-size: 14pt; }
+    .points { gap: 7pt; }
+    .points li { grid-template-columns: 20pt minmax(0, 1fr); }
+    .points li > .n { font-size: 8pt; padding-top: 1pt; }
+    ul, ol { gap: 4pt; }
+    .note { font-size: 9pt; }
+    .foot { font-size: 8.3pt; padding-top: 14pt; gap: 6pt; }
+    .foot .who { font-size: 7.5pt; }
+    h2, h3, caption { break-after: avoid; page-break-after: avoid; }
+    tr, .principle, .matrix, .doc, .shiplog, .timeline, .trait, .points li, .creds li { break-inside: avoid; page-break-inside: avoid; }
+    .summary { break-after: auto; }
+    a { color: var(--ink); text-decoration: none; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="hero">
+    <p class="eyebrow">Horowitz Andreessen Academy &middot; Dean of Education</p>
+    <h1>Commit, Ship, Show, Grow</h1>
+    <p class="dek">A sketch of how I would design and run education at the Horowitz Andreessen Academy</p>
+    <p class="byline"><span>Lea Thommen</span><span>San Francisco</span><span>September 2026</span></p>
+  </header>
+
+  <!-- ONE PAGE -->
+  <section class="sec summary" id="summary" aria-labelledby="summary-h">
+    <div class="rail"><b>The model on one page</b></div>
+    <div class="main">
+      <h2 id="summary-h" class="sr-only">The model on one page</h2>
+      <p class="lead"><strong>The brief, as I read it.</strong> Gagan, you've talked about having to design your own path in college, and doing it listlessly. That is the design brief. HAA keeps the freedom and removes the listlessness. Fellows choose what they build. The Academy supplies the structure, the peers, and the bar that turn self-direction into growth.</p>
+
+      <div class="principles">
+        <div class="principle">
+          <h3>Students own the <em>work.</em></h3>
+          <p>Every Fellow runs their own Pursuits and sets their own goals. Nobody assigns a project.</p>
+        </div>
+        <div class="principle">
+          <h3>The community owns the <em>bar.</em></h3>
+          <p>Standards come from peers, visible work, exemplars, and candid critique. Staff model the bar. They don't police it.</p>
+        </div>
+        <div class="principle">
+          <h3>Reality does the <em>grading.</em></h3>
+          <p>Users, customers, practitioners, and results judge the work. Growth is assessed from evidence and never graded.</p>
+        </div>
+      </div>
+
+      <div class="scroll">
+        <table class="loop t-mid">
+          <caption>One loop at three time scales</caption>
+          <thead>
+            <tr><th scope="col"></th><th scope="col" class="arrow">Commit</th><th scope="col" class="arrow">Ship</th><th scope="col" class="arrow">Show</th><th scope="col">Grow</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Every week</th><td>Tell your pod on Monday what you'll do</td><td>Build, about 80% of the week</td><td>Friday Demos and pod crits</td><td>Ship Log: what you learned</td></tr>
+            <tr><th scope="row">Every 6-week cycle</th><td>Pursuit Charter</td><td>Five weeks of building</td><td>Exhibition with a practitioner panel</td><td>Growth Review</td></tr>
+            <tr><th scope="row">The year</th><td>Explore, then commit to one deep Pursuit</td><td>Build in SF, abroad, inside a company</td><td>Founding Class Exhibition</td><td>Fellow Record</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="traits" aria-label="How each trait gets built">
+        <div class="trait"><span class="label">High Agency</span><p>Reps of acting without permission. Public weekly commitments, 100 real asks a year, blockers you clear yourself.</p></div>
+        <div class="trait"><span class="label">AI-Native Building</span><p>Shipping to real users every week, with AI as the default way work gets done, from the first week.</p></div>
+        <div class="trait"><span class="label">People Skills</span><p>Pods, crits, cold outreach, user interviews, public demos, and teaching peers.</p></div>
+        <div class="trait"><span class="label">Ambition</span><p>Goals that grow cycle over cycle, pressure-tested in public by people who have done big things.</p></div>
+      </div>
+
+      <div class="kv">
+        <p><strong>Assessment:</strong> evidence-based narratives on a four-level growth rubric, drawn from four sources: reality, peers, coaches, and the Fellow. No grades, no ranks.</p>
+        <p><strong>My first job:</strong> run every ritual with real young builders before the first Fellow arrives.</p>
+      </div>
+    </div>
+  </section>
+
+  <nav class="toc" aria-label="Sections">
+    <a href="#s1"><span>01</span>Start from the graduate</a>
+    <a href="#s2"><span>02</span>The operating system</a>
+    <a href="#s3"><span>03</span>The bar</a>
+    <a href="#s4"><span>04</span>Coaching</a>
+    <a href="#s5"><span>05</span>The people</a>
+    <a href="#s6"><span>06</span>Assessment</a>
+    <a href="#s7"><span>07</span>From hire to launch</a>
+    <a href="#s8"><span>08</span>What could go wrong</a>
+    <a href="#s9"><span>09</span>Why me</a>
+  </nav>
+
+  <!-- 1 -->
+  <section class="sec" id="s1" aria-labelledby="s1-h">
+    <div class="rail"><b>01</b>Backward design</div>
+    <div class="main">
+      <h2 id="s1-h">Start from the graduate</h2>
+      <p>I design backward: define what the learner should be able to do, decide what evidence would convince us, then design the experiences. That is Backward Design (Wiggins and McTighe), the method I've taught to more than 400 future educators. For HAA it means turning four abstract traits into behavior we can see.</p>
+      <h3>By August 2028, every Founding Fellow can show:</h3>
+      <ul>
+        <li>Shipped work that real people used, with numbers attached.</li>
+        <li>100 or more real asks (cold emails, calls, user interviews, pitches) and what came of them.</li>
+        <li>At least six public presentations of their work, and the feedback that changed it.</li>
+        <li>At least one thing they built that would have needed a team before AI.</li>
+        <li>Three months of real work inside a company, reviewed by their manager.</li>
+        <li>A written account of how they grew, backed by evidence a stranger would find credible.</li>
+      </ul>
+      <div class="scroll">
+        <table class="t-wide">
+          <caption>The four traits as behavior</caption>
+          <thead><tr><th scope="col" style="width:17%">Trait</th><th scope="col" style="width:45%">What it looks like</th><th scope="col">How the model builds it</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">High Agency</th><td>HAA's own definition: "when something captures your attention, you do something about it." Starts without permission, asks strangers for help, clears their own blockers, keeps public commitments.</td><td>Weekly public commitments. The 100 Asks. Fellows pull mentors instead of being assigned them. Fellows run the rituals.</td></tr>
+            <tr><th scope="row">AI-Native Building</th><td>Breaks a problem down, delegates to AI and agents, checks the output, integrates it, ships. Thinks first, then amplifies.</td><td>Everyone ships in Launch Week, coder or not. Weekly shipping. "Show your stack" at every demo.</td></tr>
+            <tr><th scope="row">People Skills</th><td>Gets strangers to say yes, gives feedback people act on, takes feedback without defending, recruits collaborators, presents clearly.</td><td>Pods, crits, user interviews, co-ops, teaching one session per cycle, feedback on feedback.</td></tr>
+            <tr><th scope="row">Ambition</th><td>Sets goals with a real chance of failing, commits publicly, raises the ceiling after each result, holds steady through setbacks.</td><td>Pursuit Charters with an audacious version, ambition checks in crits, exemplars from people who did it.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The traits compound. Ambition sets the target. Agency gets you moving. AI multiplies what one person can build. People skills multiply you through others.</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="sec" id="s2" aria-labelledby="s2-h">
+    <div class="rail"><b>02</b>Structures for self-direction</div>
+    <div class="main">
+      <h2 id="s2-h">The operating system: structures students run</h2>
+      <p>Self-direction needs more structure than lectures do. Research on minimal guidance is clear that freedom without structure produces drift, especially for people new to a field (Kirschner, Sweller and Clark, 2006). What changes at HAA is whom the structure serves. Every structure below helps a Fellow make and keep their own commitments, and Fellows run most of them.</p>
+
+      <h3>The year</h3>
+      <div class="timeline-wrap" role="img" aria-label="The Founding Class year: Explore from September to December, Commit from January to April, Abroad in May, Co-op from June to August.">
+        <div class="timeline">
+          <div class="seg explore"><b>Explore</b><span>Cycles 1 and 2 &middot; SF</span></div>
+          <div class="seg commit"><b>Commit</b><span>Cycles 3 and 4 &middot; SF</span></div>
+          <div class="seg abroad"><b>Abroad</b><span>$5K</span></div>
+          <div class="seg coop"><b>Co-op</b><span>3+ months in a company</span></div>
+          <div class="month">Sep</div><div class="month">Oct</div><div class="month">Nov</div><div class="month">Dec</div><div class="month">Jan</div><div class="month">Feb</div><div class="month">Mar</div><div class="month">Apr</div><div class="month">May</div><div class="month">Jun</div><div class="month">Jul</div><div class="month">Aug</div>
+          <div class="marker m-launch">Launch Week</div>
+          <div class="marker m-exhibit">Founding Class Exhibition</div>
+          <div class="marker m-record">Fellow Record</div>
+        </div>
+      </div>
+      <div class="scroll">
+        <table class="t-mid">
+          <thead><tr><th scope="col" style="width:15%">When</th><th scope="col" style="width:24%">Phase</th><th scope="col">What happens</th></tr></thead>
+          <tbody>
+            <tr><td>Early Sep</td><th scope="row">Launch Week</th><td>Arrive, form pods, ship something real by Friday. Baselines on all four traits.</td></tr>
+            <tr><td>Sep to Dec</td><th scope="row">Explore</th><td>Two to four short Pursuits and rabbit holes. This follows your view that only a small share of builders should start companies right away.</td></tr>
+            <tr><td>Jan to Apr</td><th scope="row">Commit</th><td>One deep Pursuit with a public, audacious goal. A company, research, hardware, a community, or media all count.</td></tr>
+            <tr><td>Late Apr</td><th scope="row">Founding Class Exhibition</th><td>Public showcase for partners, mentors, and families.</td></tr>
+            <tr><td>May</td><th scope="row">Abroad</th><td>A Field Pursuit: a question or build that needs that place, proposed in advance, funded by the $5,000 budget, reported back publicly.</td></tr>
+            <tr><td>Jun to Aug</td><th scope="row">Co-op</th><td>At least three months inside a company, with a learning contract.</td></tr>
+            <tr><td>Aug</td><th scope="row">Fellow Record</th><td>The portfolio HAA promised, with evidence and a growth narrative.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>A Show Week sits between cycles: Exhibitions, Growth Reviews, rest, and planning. Rest is part of the design, because ambition burns out when it's run as a sprint.</p>
+      <p><strong>Co-ops.</strong> I come from Switzerland, where about two-thirds of teenagers learn a trade through apprenticeships split between a company and a school. The lesson from that system: learning at work succeeds when the learner, the company, and the school share one framework. Every HAA co-op starts with a learning contract (two growth edges on the rubric, agreed with the manager), keeps a short weekly Ship Log, gets manager check-ins on the same rubric, and ends with a Co-op Debrief in SF.</p>
+      <p><strong>Breakouts.</strong> If a Pursuit takes off with users or funding, the Fellow stays and the rituals adapt to founder mode. HAA challenges dropout culture, and success shouldn't be a reason to leave.</p>
+
+      <h3>The cycle (six weeks)</h3>
+      <ul>
+        <li><strong>Week 0, Pursuit Charter.</strong> One page, written by the Fellow before any AI help: what will be true in six weeks if this goes brilliantly, the audacious version, one metric, the riskiest assumption, who I need, what I want to learn. Reviewed with the pod and the coach.</li>
+        <li><strong>Weeks 1 to 5:</strong> build, inside the weekly rhythm.</li>
+        <li><strong>Week 6, Exhibition and Growth Review</strong> (sections 3 and 6).</li>
+      </ul>
+
+      <h3>The week</h3>
+      <p>Rituals take under four hours a week. The rest is building and Courses, which protects the 75 to 80% of time for building that you've described.</p>
+      <div class="scroll">
+        <table class="t-wide">
+          <thead><tr><th scope="col" style="width:16%">When</th><th scope="col" style="width:16%">Ritual</th><th scope="col">Format</th><th scope="col" style="width:18%">Run by</th></tr></thead>
+          <tbody>
+            <tr><td>Monday, 60 min</td><th scope="row">Pod Commit</th><td>Your pods of about eight. Each Fellow: what I committed last week, what I shipped, what I commit to this week, one ask.</td><td>Rotating Fellow facilitator</td></tr>
+            <tr><td>All week</td><th scope="row">Ship Log</th><td>Five lines, visible to all of HAA: shipped, learned, metric, next, ask. AI compiles a Friday digest everyone reads.</td><td>Each Fellow</td></tr>
+            <tr><td>All week</td><th scope="row">Asks Board</th><td>Anyone posts a need ("intro to a hardware founder," "five people to test my onboarding"). Peers, residents, and mentors answer.</td><td>Open</td></tr>
+            <tr><td>Wednesday, 90 min</td><th scope="row">Pod Crit</th><td>Two Fellows get 40 minutes each of structured critique, so everyone gets a deep crit about once a month.</td><td>Fellow crit lead, plus a practitioner when possible</td></tr>
+            <tr><td>Friday, 60 min</td><th scope="row">Friday Demos</th><td>Five minutes each. Every demo ends with 30 seconds on how it was built: the stack, the agents, the prompts.</td><td>Fellows</td></tr>
+            <tr><td>Every 2 weeks, 30 min</td><th scope="row">Coach 1:1</th><td>About growth, not status. The Ship Log already covers status.</td><td>Coach</td></tr>
+            <tr><td>When the Fellow asks</td><th scope="row">Mentor touchpoints</th><td>The ladder below.</td><td>Fellow</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="shiplog" aria-label="An illustrative Ship Log entry">
+        <div class="head">Ship Log &middot; Week 7 &middot; illustrative</div>
+        <dl>
+          <dt>SHIPPED</dt><dd>Onboarding v2 is live: 14 new sign-ups this week</dd>
+          <dt>LEARNED</dt><dd>Most people quit at step 3, the API key screen</dd>
+          <dt>METRIC</dt><dd>Activation 22% → 41%</dd>
+          <dt>NEXT</dt><dd>Cut the key screen; interview 5 people who churned</dd>
+          <dt>ASK</dt><dd>Intro to someone who has built developer-tool onboarding</dd>
+        </dl>
+      </div>
+
+      <p><strong>The 100 Asks.</strong> Every Fellow logs their asks in the Ship Log: cold emails, user interviews, pitches, requests for help. The target is 100 over the year. Asking is the one rep that builds agency and people skills at the same time, and most young people have never done it at volume.</p>
+      <p><strong>Courses stay pure input.</strong> I'd keep your principle that Courses feed Pursuits indirectly: no Course assigns deliverables, and Fellows decide what to use. The bridge is one question at Pod Commit: "What from this week's Course are you stealing?"</p>
+      <p><strong>AI does the tutoring. Humans do the pushing.</strong> Erik Torenberg's announcement cites Bloom's finding that one-on-one tutoring beats 98% of a conventional class. AI makes the tutoring half affordable for every Fellow. Each Fellow gets a Pursuit Copilot, an AI assistant grounded in their Charter and Ship Log that teaches what the Pursuit needs next, when it's needed. Coaches and mentors are then free for judgment, motivation, and the bar. I've built this kind of assistant before: it guided more than 100 of my students through course content and their capstone projects. Fellows own their data.</p>
+
+      <h3>Mentorship touchpoints: the ladder</h3>
+      <p>HAA's network holds more than 200 practitioners, and their time is scarce. Each touchpoint is a defined format, so a small amount of time counts:</p>
+      <ol class="ladder">
+        <li><strong>Answer an Ask:</strong> async, five minutes.</li>
+        <li><strong>Office hours:</strong> 30 minutes, bookable. The Fellow brings one decision.</li>
+        <li><strong>Teardown:</strong> a recorded ten-minute critique of a product, pitch, or paper.</li>
+        <li><strong>Panelist:</strong> 90 minutes at a crit or Exhibition, once per cycle.</li>
+        <li><strong>Pursuit mentor:</strong> three sessions with one Fellow across one cycle.</li>
+      </ol>
+      <p>Fellows pull mentors. Coaches make sure nobody goes a cycle without at least one practitioner touchpoint, because the Fellows who most need a mentor are often the least likely to ask.</p>
+
+      <h3>Fellows run it</h3>
+      <ul>
+        <li>Fellows facilitate pods and crits from Cycle 2 on.</li>
+        <li>Fellows write the HAA Standard (section 3).</li>
+        <li>Any Fellow can propose a new ritual. If eight Fellows join, it runs for a cycle and stays only if it earns its time.</li>
+        <li>Every Fellow teaches one session per cycle: a skill, a tool, or a teardown of their own failure. Teaching spreads knowledge through 50 people without lectures.</li>
+        <li>Once the two-year program starts, second-years coach first-year pods and sit on admissions panels.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="sec" id="s3" aria-labelledby="s3-h">
+    <div class="rail"><b>03</b>Peer norms and osmosis</div>
+    <div class="main">
+      <h2 id="s3-h">The bar: set by peers, not enforced</h2>
+      <p class="lead"><strong>What the bar is.</strong> The reaction admissions looks for, applied every week: "You did what?" There is no discount for age. A Fellow's app is compared with apps, and their research with research.</p>
+      <h3>Seven ways the bar spreads without enforcement</h3>
+      <ol class="points">
+        <li><span class="n">01</span><span><strong>Select for it.</strong> Admissions and the Dean share one trait rubric, so HAA admits people who raise the average.</span></li>
+        <li><span class="n">02</span><span><strong>Set it in week one.</strong> Teams settle their working patterns early and keep them until something disrupts them (Gersick, 1988). Launch Week ends with every Fellow shipping something real, so the first norm anyone experiences is that everyone ships.</span></li>
+        <li><span class="n">03</span><span><strong>Make work visible.</strong> Ship Logs, the Friday digest, a wall of live metrics, public Exhibitions. When you can see what 49 peers shipped this week, nobody has to tell you your week was thin.</span></li>
+        <li><span class="n">04</span><span><strong>Show exemplars.</strong> A library of excellent work: first versions of products that became great, the bodies of work the Courses study, and later the best work of earlier Fellows. People learn what "good" means from examples far better than from rubrics (Ron Berger, <em>An Ethic of Excellence</em>).</span></li>
+        <li><span class="n">05</span><span><strong>Critique that cuts.</strong> Pixar's Braintrust rule: notes are candid, and the owner decides what to do with them. HAA's crit protocol is <strong>Show → Ask → Push → Own</strong>. The presenter shows the work and asks for the feedback they need. The panel pushes, always including "What would the 10x version be?" and "How do you know it works?" The presenter then says publicly what they'll do next. Feedback targets the work, never the person. You believe in feedback in public, and this format makes public feedback safe enough to be honest.</span></li>
+        <li><span class="n">06</span><span><strong>Fellows write the Standard.</strong> In Cycle 1, the Founding Class writes the HAA Standard, one page defining excellent work and how we treat each other, and revises it every cycle. Communities keep the rules they make themselves (Elinor Ostrom).</span></li>
+        <li><span class="n">07</span><span><strong>Builders in the room.</strong> Builders in Residence, and co-working tenants who trade affordable space for open doors and demo attendance, if Operations builds the co-working floor. Newcomers learn most by watching people a few steps ahead (Lave and Wenger).</span></li>
+      </ol>
+      <p><strong>What we celebrate.</strong> Status goes to what we want more of: shipping, audacious attempts, and helping others ship ("Unblocker of the week" in the digest). Failure gets a debrief: honor the attempt, extract the lesson, publish the post-mortem. That matches your view that failure earns congratulations on the attempt and a real lesson, without being romanticized.</p>
+      <p><strong>When a Fellow stalls.</strong> No punishment. Graduated support, faster than any grading system could react:</p>
+      <ol>
+        <li>The Ship Log makes a stall visible within two weeks.</li>
+        <li>Pod check-in: peers ask what's going on.</li>
+        <li>Coach reset: diagnose whether it's scope, skill, motivation, or wellbeing.</li>
+        <li>A two-week reset sprint with small, sure commitments to rebuild momentum.</li>
+        <li>If it persists, a candid conversation about fit, held with care.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="sec" id="s4" aria-labelledby="s4-h">
+    <div class="rail"><b>04</b>Push, then step back</div>
+    <div class="main">
+      <h2 id="s4-h">Coaching: push bigger, know when to step back</h2>
+      <p>Erik's announcement promised "dedicated, experienced coaches and mentors who know your work and psychology." My coaching model rests on one finding from student development research: people grow when challenge and support are both high (Nevitt Sanford). The coach reads which state a Fellow is in and makes the matching move.</p>
+
+      <div class="matrix" role="group" aria-label="Challenge and support matrix with the coach's move in each state">
+        <div class="axis-y">Challenge</div>
+        <div class="tick y" style="grid-row:1">High</div>
+        <div class="tick y" style="grid-row:2">Low</div>
+        <div class="cell c-ow"><b>Overwhelm</b><span>Shrink the scope, keep the ambition.</span><q>What's the smallest version you can ship in seven days?</q></div>
+        <div class="cell growth c-gr"><b>Growth</b><span>Step back.</span><q>What do you need from me, if anything?</q></div>
+        <div class="cell c-co"><b>Coasting</b><span>Raise the stakes.</span><q>What would make this scary?</q></div>
+        <div class="cell c-cf"><b>Comfort</b><span>Pull support back and raise the goal.</span><q>What would the 10x version be?</q></div>
+        <div class="tick x" style="grid-column:3">Low</div>
+        <div class="tick x" style="grid-column:4">High</div>
+        <div class="axis-x">Support</div>
+      </div>
+
+      <p><strong>Two questions do most of the work.</strong> "What would the 10x version be?" builds ambition. "What's the smallest version you can ship in seven days?" builds agency. Good coaching alternates between them.</p>
+      <p><strong>Knowing when to step back.</strong> The signals: the Fellow solves their own problems, makes reasoned trade-offs, and asks better questions than the coach. Then the coach fades. Cognitive apprenticeship research names the sequence: modeling, coaching, scaffolding, fading (Collins, Brown and Newman). Each Fellow also sets a coaching contract at the start of the year: how hard they want to be pushed, and how they want to hear it.</p>
+      <p><strong>How hard feedback lands.</strong> One sentence changes how people take criticism: "I'm giving you this feedback because I have very high expectations and I know you can reach them." In a randomized study, feedback framed this way made students much more likely to revise their work (Yeager and colleagues, 2014). Every coach and crit lead uses it. It is how you hold an extremely high standard and care deeply about someone at the same time.</p>
+      <p><strong>The whole person.</strong> Fellows will be 16 to 22, many away from home for the first time, surrounded by intense peers and famous people. Built in from day one: reset weeks, a wellbeing check in every 1:1, a clinical partner with a clear referral path, and safeguarding for Fellows under 18. Coaches are not therapists, and they know exactly when to call one.</p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="sec" id="s5" aria-labelledby="s5-h">
+    <div class="rail"><b>05</b>Coaches and mentors</div>
+    <div class="main">
+      <h2 id="s5-h">The people: hiring, training, and managing coaches and mentors</h2>
+      <div class="scroll">
+        <table class="t-wide">
+          <caption>The team for 50 Fellows in year one</caption>
+          <thead><tr><th scope="col" style="width:24%">Role</th><th scope="col">Who</th><th scope="col" style="width:24%">Load</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Dean</th><td>Owns the model, trains the team, runs Exhibitions, coaches a few Fellows directly to stay close to the work</td><td>6 to 8 Fellows</td></tr>
+            <tr><th scope="row">Resident Coaches (3)</th><td>Full-time, in person. Builders who can coach.</td><td>2 pods each, about 16 Fellows</td></tr>
+            <tr><th scope="row">Builders in Residence (3 to 5)</th><td>Part-time practitioners building their own thing on campus</td><td>Open door, office hours</td></tr>
+            <tr><th scope="row">CTO</th><td>Technical mentor and lab, per the CTO brief</td><td>Office hours</td></tr>
+            <tr><th scope="row">Mentor network (200+)</th><td>Practitioners in the ladder formats</td><td>Pulled by Fellows</td></tr>
+            <tr><th scope="row">Course faculty</th><td>Founders and operators teaching Courses of two days to four weeks</td><td>Per Course</td></tr>
+            <tr><th scope="row">Co-op managers</th><td>Partner-company managers, trained on the rubric</td><td>Summer</td></tr>
+            <tr><th scope="row">Peers</th><td>Pod facilitators and crit leads</td><td>Weekly</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Who I hire</h3>
+      <ol>
+        <li><strong>Has built something real.</strong> Fellows respect people who have shipped.</li>
+        <li><strong>Coaches instead of fixing.</strong> Asks the question that lets the Fellow find the answer.</li>
+        <li><strong>Is a warm demander:</strong> high standards and obvious care at once. The term comes from research on the teachers who got the most out of their students (Kleinfeld, 1975).</li>
+      </ol>
+      <p><strong>How I test for it.</strong> Interviews don't show coaching. Every finalist runs a live crit with real young builders, coaches one of them for 20 minutes, and writes a growth narrative from a real Ship Log. I hire for what I see.</p>
+
+      <h3>How I train them</h3>
+      <ul>
+        <li><strong>Coach bootcamp</strong> (two weeks, August 2027): the model, the rubric, the crit protocol, wise feedback, safeguarding. Practiced with pilot students.</li>
+        <li><strong>Weekly calibration:</strong> coaches rate the same Fellow evidence independently, then compare and resolve differences. It keeps judgment-based assessment fair, and it's how I calibrated scoring criteria for teacher certification exams.</li>
+        <li><strong>Observation cycles:</strong> coaches record and review their own sessions, with consent, the way I coached more than 20 early-career teachers through video-based feedback.</li>
+        <li><strong>A living playbook</strong>, updated every cycle, so the model survives growth and turnover.</li>
+      </ul>
+      <p><strong>Making 200+ busy practitioners useful.</strong> Most operators are brilliant and have never designed learning. Course faculty get a one-page design kit and a 45-minute session with me: open with a real problem you faced, study the real artifact, let Fellows interrogate you, and leave them with a question to carry into their own Pursuit. Mentors get the ladder and a two-minute brief on each Fellow before any session. Co-op managers get the rubric and a 20-minute orientation.</p>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="sec" id="s6" aria-labelledby="s6-h">
+    <div class="rail"><b>06</b>Traits that can't be graded</div>
+    <div class="main">
+      <h2 id="s6-h">Assessment: growth on traits that can't be graded</h2>
+      <p class="lead"><strong>You can't test agency, but you can watch it.</strong> The traits are invisible. The behavior they produce isn't. So HAA assesses behavior, from evidence, against each Fellow's own starting point.</p>
+      <h3>Seven rules</h3>
+      <ol class="points">
+        <li><span class="n">01</span><span><strong>Evidence, not impressions.</strong> Every judgment cites something: a Ship Log entry, an email thread, a user metric, a recorded demo, feedback a peer rated as useful.</span></li>
+        <li><span class="n">02</span><span><strong>Triangulate.</strong> Four sources for every trait: reality, peers, coaches and mentors, and the Fellow.</span></li>
+        <li><span class="n">03</span><span><strong>Growth against your own baseline.</strong> Measured in Launch Week, remeasured every cycle.</span></li>
+        <li><span class="n">04</span><span><strong>Narratives, not numbers.</strong> A written account with evidence links. No grades, scores, or GPA.</span></li>
+        <li><span class="n">05</span><span><strong>No ranks, no leaderboards.</strong> Comparison happens through visible work, never through an official ladder.</span></li>
+        <li><span class="n">06</span><span><strong>Guard against Goodhart's law.</strong> When a measure becomes a target, it stops measuring. Indicators inform judgment and never become quotas or rewards.</span></li>
+        <li><span class="n">07</span><span><strong>The Fellow writes first.</strong> Every review starts with the Fellow's Growth Memo, drafted before any AI help, in line with your first-draft rule.</span></li>
+      </ol>
+
+      <div class="scroll">
+        <table class="t-wide rubric">
+          <caption>The growth rubric &middot; my draft; the Founding Class rewrites it in Cycle 1</caption>
+          <thead><tr><th scope="col" style="width:16%"></th><th scope="col">Emerging</th><th scope="col">Practicing</th><th scope="col">Strong</th><th scope="col">Exceptional</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">High Agency</th><td>Acts on clear instructions; waits for blockers to be removed</td><td>Sets own weekly goals and keeps most public commitments</td><td>Clears own blockers; makes cold asks that land; turns a no into another path</td><td>Creates opportunities that didn't exist; moves other people to act</td></tr>
+            <tr><th scope="row">AI-Native Building</th><td>Uses AI for isolated tasks</td><td>Ships working things with AI and iterates on user feedback</td><td>Breaks problems down, delegates to agents, checks output with evals, ships at team scale</td><td>Orchestrates many agents; builds tools others adopt; works where the frontier just moved</td></tr>
+            <tr><th scope="row">People Skills</th><td>Works alone; gives vague feedback and defends against feedback received</td><td>Gives specific feedback; reports progress clearly; asks for input</td><td>Gets strangers to say yes; gives feedback people act on; handles conflict directly</td><td>Recruits others to the mission; makes the room better; people seek them out</td></tr>
+            <tr><th scope="row">Ambition</th><td>Picks goals they're sure to hit</td><td>Sets stretch goals and commits publicly</td><td>Sets goals with a real chance of failing; raises the ceiling after each result</td><td>Pursues something that would matter at scale and holds course through setbacks</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="scroll">
+        <table class="t-wide">
+          <caption>Where the evidence comes from</caption>
+          <thead><tr><th scope="col" style="width:14%"></th><th scope="col">Reality</th><th scope="col">Peers</th><th scope="col">Coaches and mentors</th><th scope="col">Self</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Agency</th><td>Asks sent and answered; commitments kept</td><td>Pod observations</td><td>Blockers cleared without help</td><td>Growth Memo</td></tr>
+            <tr><th scope="row">AI-Native</th><td>Shipped work, users, cycle time, agent workflows</td><td>Crit notes on the build</td><td>Technical reviews by the CTO and residents</td><td>"Show your stack" write-ups</td></tr>
+            <tr><th scope="row">People</th><td>Outreach yes-rate; co-op manager review</td><td>Usefulness ratings on feedback given</td><td>Exhibition panel notes</td><td>Reflection on a conflict or a pitch</td></tr>
+            <tr><th scope="row">Ambition</th><td>Charter goals over time, reached or missed</td><td>Ambition check at Charter review</td><td>Panel: "How big was this, for this Fellow?"</td><td>What I'd attempt next</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Feedback on feedback.</strong> After every crit, the presenter rates each piece of feedback with one tap: useful or not. Over a year, that builds a real record of who gives feedback people act on, which is the core of people skills.</p>
+
+      <h3>The rhythm</h3>
+      <ul>
+        <li><strong>Launch Week baseline:</strong> the first build, a structured interview, and a self-assessment on the rubric. Each Fellow picks two growth edges.</li>
+        <li><strong>Every cycle:</strong> an Exhibition with a practitioner panel (the demo, then a defense of the choices behind it), followed by a Growth Review: the Fellow's Growth Memo (two pages at most), the coach's narrative, peer and mentor input, a 45-minute conversation, and new growth edges.</li>
+        <li><strong>Co-op:</strong> the learning contract, with manager check-ins on the same rubric.</li>
+        <li><strong>August:</strong> the Fellow Record.</li>
+      </ul>
+
+      <blockquote class="doc" aria-label="Illustrative Growth Review excerpt">
+        <div class="doc-head"><span>Growth Review &middot; Cycle 3</span><span>Invented Fellow, for illustration</span></div>
+        <div class="doc-body">
+          <p><span class="shift">Agency: Practicing <span class="arrow">→</span> Strong.</span> In Cycle 1, Fellow A kept 5 of 9 weekly commitments and sent every blocker to their coach. In Cycle 3, they kept 11 of 12, sent 140 cold emails to clinic managers (38 replies, 6 pilots), and got past a data-access refusal by asking a mentor for an introduction to a different clinic.</p>
+          <p><span class="shift">Next edge.</span> They still avoid asks where rejection feels personal, like investors and senior engineers. Cycle 4 commitment: ten asks to people they believe are out of reach.</p>
+        </div>
+      </blockquote>
+
+      <p><strong>The Fellow Record.</strong> HAA promised a portfolio in place of a degree. I'd make it the most credible document a 19-year-old can hold: shipped work with results, a growth narrative on each trait with evidence links, Exhibition recordings, and signed endorsements from practitioners and the co-op manager. It serves three readers. Employers and partners use it to hire. Colleges use it, since HAA believes in college and some Fellows will go. Regulators use it: when HAA seeks approval for the two-year program, this system documents learning outcomes without a single grade. I've translated accreditation requirements into competency roadmaps before, and I'd build the record with that approval in mind from day one.</p>
+
+      <h3>Is the model working? A short monthly dashboard for you</h3>
+      <ul>
+        <li><strong>Weekly:</strong> share of Fellows who shipped to a real user, commitments kept, asks made, and a two-question pulse: "This week I was stretched" and "This week I had the support I needed."</li>
+        <li><strong>Every cycle:</strong> movement on the rubric, panel ratings at Exhibitions, mentor touchpoints per Fellow, stalls caught and recovered.</li>
+        <li><strong>Long term:</strong> co-op manager ratings and return offers, then what Fellows build at one, three, and five years.</li>
+      </ul>
+      <p>Every ritual is a hypothesis with an owner and a review date. If it doesn't earn its time, it goes.</p>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="sec" id="s7" aria-labelledby="s7-h">
+    <div class="rail"><b>07</b>Ten months to launch</div>
+    <div class="main">
+      <h2 id="s7-h">From hire to September 2027</h2>
+      <div class="scroll">
+        <table class="t-wide">
+          <thead><tr><th scope="col" style="width:15%">When</th><th scope="col">What</th><th scope="col" style="width:22%">Done when</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Nov to Dec 2026</th><td><strong>Listen and draft.</strong> Interview the founding team, 20+ Course faculty and mentors, and 30+ applicants. Draft Model v0.1: rubric, rituals, assessment.</td><td>Gagan has torn v0.1 apart</td></tr>
+            <tr><th scope="row">Jan to Mar 2027</th><td><strong>Prototype.</strong> Monthly weekend Build Sprints in SF with 20 to 30 young builders, including admitted Fellows once decisions go out in late January. Test every ritual and the rubric. Align the admissions rubric with Student Recruitment.</td><td>Each ritual has run three times with real students</td></tr>
+            <tr><th scope="row">Apr to Jun 2027</th><td><strong>Build the team and tools.</strong> Hire three Resident Coaches. Spec the Ship Log, Pursuit Copilot, and Fellow Record with the CTO. Set up co-op learning contracts with BD. Design sessions with the first Course faculty. Admitted Fellows start a small Pursuit before arriving.</td><td>Coaches signed; platform in beta</td></tr>
+            <tr><th scope="row">Jul to Aug 2027</th><td><strong>Rehearse.</strong> Coach bootcamp. A full dry run of Launch Week. Safeguarding and wellbeing protocols with Operations.</td><td>Launch Week rehearsed end to end</td></tr>
+            <tr><th scope="row">Sep 2027 on</th><td><strong>Run and iterate.</strong> A retro after every cycle, with changes published to Fellows. Monthly dashboard. Design year two for the 2028 program.</td><td>Fellows call the rituals theirs</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The Build Sprints do double duty: they feed Student Recruitment's pipeline and give the Creator in Residence real stories to tell.</p>
+      <h3>Where my work meets the rest of the founding team</h3>
+      <ul>
+        <li><strong>CTO:</strong> we co-own AI-native building and the technical curriculum. They build the Ship Log and Fellow Record platform; I write the spec.</li>
+        <li><strong>Experience and Program Design:</strong> they own life outside the work, I own the learning rituals. One shared calendar; we co-produce Exhibitions.</li>
+        <li><strong>BD and Partnerships:</strong> co-op learning contracts, manager training, resources for ambitious Pursuits.</li>
+        <li><strong>Student Recruitment:</strong> one trait rubric, from admissions to the Fellow Record.</li>
+        <li><strong>Operations:</strong> regulatory evidence, a campus that makes work visible, safeguarding.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="sec" id="s8" aria-labelledby="s8-h">
+    <div class="rail"><b>08</b>Pre-mortem</div>
+    <div class="main">
+      <h2 id="s8-h">What could go wrong</h2>
+      <p>It's June 2028 and the model has failed. The likeliest reasons, and what I'd build against each:</p>
+      <div class="scroll">
+        <table class="t-mid">
+          <thead><tr><th scope="col" style="width:38%">Failure</th><th scope="col">Guardrail</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Freedom became drift</th><td>Six-week cycles, weekly commitments, stalls visible within two weeks</td></tr>
+            <tr><th scope="row">Public feedback became performance or cruelty</th><td>The crit protocol, the owner decides, feedback on the work only, feedback trained as a skill</td></tr>
+            <tr><th scope="row">Intensity became burnout</th><td>Reset weeks, wellbeing checks in every 1:1, a clinical partner, pace norms in the Standard</td></tr>
+            <tr><th scope="row">Everyone built the same AI startup</th><td>An explore phase first; research, hardware, nonprofits, and media honored equally</td></tr>
+            <tr><th scope="row">Famous mentors, thin mentorship</th><td>Defined formats; depth comes from Resident Coaches and Builders in Residence</td></tr>
+            <tr><th scope="row">Metrics got gamed</th><td>No ranks or leaderboards; evidence informs judgment and never becomes a quota</td></tr>
+            <tr><th scope="row">It worked for 50 and couldn't grow</th><td>Peer-run rituals and software from day one; a written playbook; second-years coaching first-years</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The last row answers the critics' strongest point, that a model built for 50 handpicked students won't scale. A system run by peers gets stronger as it grows. A system run by staff only gets more expensive.</p>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="sec" id="s9" aria-labelledby="s9-h">
+    <div class="rail"><b>09</b>Fit</div>
+    <div class="main">
+      <h2 id="s9-h">Why me</h2>
+      <p class="lead">I'm not a founder, and HAA doesn't need its Dean to be one. Its network is full of founders. It needs someone who knows how people grow, can build the weekly system that makes growth happen, and can prove that it did. That has been my work for nearly a decade.</p>
+      <ul class="creds">
+        <li><strong>I've assessed complex work with rubrics and defenses instead of answer keys.</strong> I designed certification exams for more than 100 teacher candidates: a rubric-scored design submission plus a structured oral defense, with calibrated criteria and pass thresholds. The Exhibition and Growth Review in this sketch are that system, rebuilt for builders.</li>
+        <li><strong>I've taught people to design their own learning.</strong> At FHNW I trained more than 400 future educators to design competency-based learning, with a 95% mastery rate and a capstone in which each designed their own learning architecture.</li>
+        <li><strong>I've coached.</strong> More than 20 early-career teachers through video-based observation and feedback cycles, and more than 10 new teachers as their mentor.</li>
+        <li><strong>I've trained the people who teach.</strong> Professional development workshops for more than 100 practicing teachers on designing high-engagement learning, rated 4.5 out of 5.</li>
+        <li><strong>I've led teams and measured impact.</strong> I led curriculum development for a nationally funded Swiss curriculum with a team of 10 designers and educators, and measured a 40% increase in competency acquisition across a 200-learner pilot, which I reported to the national funders.</li>
+        <li><strong>I build with AI.</strong> A custom AI assistant for more than 100 students; Claude Code agents that faculty ran on their own, part of a workflow change that cut content production time by 30%; and my own multi-skill agent system with automated quality gates.</li>
+        <li><strong>I know teenagers.</strong> Eight years teaching more than 1,000 secondary school students.</li>
+      </ul>
+      <p class="closing">I live in San Francisco, and I'm ready to be all in. I'd love to build this with you.</p>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p class="who">Lea Thommen &middot; linkedin.com/in/leathommen</p>
+    <p><em>Built on:</em> Wiggins and McTighe, <em>Understanding by Design</em> &middot; Kirschner, Sweller and Clark (2006) on minimal guidance &middot; Gersick (1988) on how teams set norms &middot; Ron Berger, <em>An Ethic of Excellence</em> &middot; Ed Catmull, <em>Creativity, Inc.</em> &middot; Elinor Ostrom, <em>Governing the Commons</em> &middot; Lave and Wenger, <em>Situated Learning</em> &middot; Nevitt Sanford on challenge and support &middot; Collins, Brown and Newman on cognitive apprenticeship &middot; Yeager and colleagues (2014) on wise feedback &middot; Kleinfeld (1975) on warm demanders &middot; Bloom (1984) on tutoring.</p>
+  </footer>
+
+</div>
